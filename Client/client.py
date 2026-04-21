@@ -1,11 +1,14 @@
 import socket
 import struct
 import os
+import time
 
 HOST = "localhost"
 PORT = 9999
 BUFFER_SIZE = 4096
 SAVE_AS = "received_file"
+MAX_RETRIES = 10
+DELAY = 5  # seconds
 
 def receive_data(sock, size):
     data = b""
@@ -31,9 +34,24 @@ def send_string(sock, string):
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP socket
 
 try:
-    client.connect((HOST, PORT))  # Replace with the server's address and port
-    print(f"Connected to server [{HOST}:{PORT}]...")
 
+    connected = False
+    retries = MAX_RETRIES
+    while retries > 0 and not connected:
+        try:
+            print(f"Attempting to connect to server [{HOST}:{PORT}]... ({MAX_RETRIES - retries + 1}/{MAX_RETRIES})")
+            client.connect((HOST, PORT))  # Replace with the server's address and port
+            connected = True
+            print(f"Connected to server [{HOST}:{PORT}]...")
+
+        except (ConnectionRefusedError, ConnectionError) as e:
+            retries -= 1
+            if retries > 0:
+                print(f"Connection failed: {e}. Retrying in {DELAY} seconds...")
+                time.sleep(DELAY)
+            else:
+                print("Failed to connect to the server after multiple attempts.")
+                raise ConnectionError("Unable to connect to the server after multiple attempts.")
 
     avail_files = receive_string(client)
     print("\nAvailable files on server:")
