@@ -4,7 +4,7 @@ This is a simple file transfer application built in Python using TCP sockets. It
 
 ## Features
 * File Transfer via TCP socket
-* Client can view availanle files on sever once connection is established
+* Client can view available files on the sever once a connection is established
 * File download progress bar with percentage
 
 ## How It Works
