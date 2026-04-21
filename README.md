@@ -11,7 +11,7 @@ This is a simple file transfer application built in Python using TCP sockets. It
 1. The server starts and listens for client connections.
 2. The client attempts to connect to the server.
 3. Once connected, the server sends a list of available files from its directory.
-4. The client displays the list and asks the user to enter the file name.
+4. The client displays the list and asks the user to enter the name of the file they wish to download.
 5. The server checks whether the requested file exists.
 6. If the file exists, the server sends the file to the client.
 7. The client saves the file as `received_file` with the original file extension.
