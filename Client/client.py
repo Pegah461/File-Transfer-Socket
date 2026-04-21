@@ -39,15 +39,15 @@ try:
     retries = MAX_RETRIES
     while retries > 0 and not connected:
         try:
-            print(f"Attempting to connect to server [{HOST}:{PORT}]... ({MAX_RETRIES - retries + 1}/{MAX_RETRIES})")
+            print(f"\nAttempting to connect to server [{HOST}:{PORT}]... ({MAX_RETRIES - retries + 1}/{MAX_RETRIES})")
             client.connect((HOST, PORT))  # Replace with the server's address and port
             connected = True
-            print(f"Connected to server [{HOST}:{PORT}]...")
+            print(f"\nConnected to server [{HOST}:{PORT}]...")
 
         except (ConnectionRefusedError, ConnectionError) as e:
             retries -= 1
             if retries > 0:
-                print(f"Connection failed: {e}. Retrying in {DELAY} seconds...")
+                print(f"Connection failed. Retrying in {DELAY} seconds...")
                 time.sleep(DELAY)
             else:
                 print("Failed to connect to the server after multiple attempts.")
@@ -71,14 +71,12 @@ try:
     elif response == "OK":
         file_name = receive_string(client)
         file_size = struct.unpack('!Q', receive_data(client, 8))[0]  # Receive the file size
-        print(f"Receiving file {file_name} ({file_size} bytes) from server...")
+        print(f"\nReceiving file {file_name} ({file_size} bytes) from server...")
 
         save_name = SAVE_AS
         ext = os.path.splitext(file_name)[1]
         if ext:
             save_name += ext
-
-        print(f"Receiving file: {save_name} and saving as: {save_name}...")
 
         received_bytes = 0
         last_percent = -1
@@ -99,8 +97,8 @@ try:
                     print(f"\rDownloading: [{bar}] {percent}%", end="")
                     last_percent = percent
 
-        print("\nFile received successfully.")
-        print(f"File transfer complete. File saved as: {save_name}")
+        print("\n\nFile received successfully.")
+        print(f"File saved as: {save_name}")
 
     else:
         print("Unexpected response from server.")
@@ -111,4 +109,4 @@ except Exception as e:
 
 finally:
     client.close()
-    print("Client closed.")
+    print("\nClient closed.")

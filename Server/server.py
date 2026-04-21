@@ -39,25 +39,25 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP socket
 server.bind((HOST, PORT))
 server.listen()
 
-print(f"Server is listening on [{HOST}:{PORT}]...")
+print(f"\nServer is listening on [{HOST}:{PORT}]...")
 print("Waiting for a connection...")
 
 client, address = server.accept()
-print(f"Connection established with [{address}]")
-print(f"Ready to communicate with [{address}]...")
+print(f"\nConnection established with [{address}]")
 
 try:
 
     files_avail = get_file_list()
     file_list_msg = "\n".join(files_avail) if files_avail else "No files available."
     send_string(client, file_list_msg)  # Send the list of available files to the client
-    print("Sent list of available files to client.")
+    print("\nSent list of available files to client.")
+    print("Waiting for client's file request...")
 
     requested_file = receive_string(client)
-    print(f"Client [{address}] requested file: {requested_file}...")
+    print(f"\nClient [{address}] requested file: [{requested_file}]...")
 
     if not os.path.isfile(requested_file) or not os.path.exists(requested_file):
-        print(f"File {requested_file} does not exist. Sending error message to client.")
+        print(f"\nFile {requested_file} does not exist. Sending error message to client.")
         send_string(client, "ERROR: File not found.")
         print("Requested file does not exist.")
 
@@ -68,7 +68,7 @@ try:
         send_string(client, os.path.basename(requested_file))  # Send the file name to the client
         client.sendall(struct.pack('!Q', file_size))  # Send the file size to the client
 
-        print(f"Sending file {requested_file} ({file_size} bytes) to client [{address}]...")
+        print(f"\nSending file {requested_file} ({file_size} bytes) to client [{address}]...")
 
         sent_bytes = 0
         last_percent = -1
@@ -84,14 +84,17 @@ try:
 
                 percent = int((sent_bytes / file_size) * 100) if file_size > 0 else 100
                 if percent != last_percent:
-                    print(f"Sent {percent}% of the file to client [{address}]...")
+                    bar_length = 30
+                    filled = int(bar_length * sent_bytes / file_size) if file_size > 0 else bar_length
+                    bar = "#" * filled + "-" * (bar_length - filled)
+                    print(f"\rTransferring: [{bar}] {percent}%", end="")
                     last_percent = percent
 
-        print(f"File transfer completed.")
+        print("\n\nFile transfer completed.")
 except Exception as e:
     print(f"Server error: {e}")
 
 finally:
     client.close()
     server.close()
-    print("Server closed.")
+    print("\nServer closed.")
