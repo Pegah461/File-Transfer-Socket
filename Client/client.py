@@ -34,6 +34,13 @@ try:
     client.connect((HOST, PORT))  # Replace with the server's address and port
     print(f"Connected to server [{HOST}:{PORT}]...")
 
+
+    avail_files = receive_string(client)
+    print("\nAvailable files on server:")
+    print("--------------------------------")
+    print(avail_files)
+    print("--------------------------------")
+
     requested_file = input("Enter the name of the file you want to receive: ").strip()
     send_string(client, requested_file)  # Send the requested file name to the server
 

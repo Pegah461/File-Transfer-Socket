@@ -27,6 +27,14 @@ def send_string(sock, string):
     sock.sendall(struct.pack('!I', len(encoded_string)))  # Send the length of the string
     sock.sendall(encoded_string)  # Send the string data
 
+def get_file_list():
+    files = []
+    for item in os.listdir('.'):
+        if os.path.isfile(item):
+            files.append(item)
+    files.sort()
+    return files
+
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP socket
 server.bind((HOST, PORT))
 server.listen()
@@ -39,6 +47,12 @@ print(f"Connection established with [{address}]")
 print(f"Ready to communicate with [{address}]...")
 
 try:
+
+    files_avail = get_file_list()
+    file_list_msg = "\n".join(files_avail) if files_avail else "No files available."
+    send_string(client, file_list_msg)  # Send the list of available files to the client
+    print("Sent list of available files to client.")
+
     requested_file = receive_string(client)
     print(f"Client [{address}] requested file: {requested_file}...")
 
